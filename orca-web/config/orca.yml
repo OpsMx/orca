@@ -35,6 +35,12 @@ kayenta:
 redis:
   connection: ${services.redis.baseUrl:redis://localhost:6379}
 
+policy:
+  opa:
+    enabled: false
+    url: http://localhost:8181
+    policyLocation: v1/data/example/allow
+
 keiko:
   queue:
     fillExecutorEachCycle: true
