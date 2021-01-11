@@ -18,6 +18,7 @@ package com.netflix.spinnaker.orca.pipeline
 
 import com.netflix.spinnaker.orca.api.pipeline.graph.StageDefinitionBuilder
 import com.netflix.spinnaker.orca.events.BeforeInitialExecutionPersist
+import com.netflix.spinnaker.orca.extensionpoint.pipeline.ExecutionPreprocessor
 import org.springframework.context.ApplicationEventPublisher
 
 import javax.annotation.Nonnull
@@ -47,7 +48,7 @@ class PipelineExecutionLauncherSpec extends Specification {
       executionRunner,
       Clock.systemDefaultZone(),
       applicationEventPublisher,
-      Optional.of(pipelineValidator),
+      Optional.of([pipelineValidator] as List<PipelineValidator>),
       Optional.<Registry> empty()
     )
   }
