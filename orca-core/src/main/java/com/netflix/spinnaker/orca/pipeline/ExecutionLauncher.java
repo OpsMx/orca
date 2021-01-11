@@ -39,6 +39,7 @@ import com.netflix.spinnaker.orca.pipeline.persistence.ExecutionRepository;
 import java.io.IOException;
 import java.io.Serializable;
 import java.time.Clock;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -59,7 +60,7 @@ public class ExecutionLauncher {
   private final ExecutionRepository executionRepository;
   private final ExecutionRunner executionRunner;
   private final Clock clock;
-  private final Optional<PipelineValidator> pipelineValidator;
+  private final List<PipelineValidator> pipelineValidators;
   private final Optional<Registry> registry;
   private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -70,14 +71,14 @@ public class ExecutionLauncher {
       ExecutionRunner executionRunner,
       Clock clock,
       ApplicationEventPublisher applicationEventPublisher,
-      Optional<PipelineValidator> pipelineValidator,
+      Optional<List<PipelineValidator>> pipelineValidators,
       Optional<Registry> registry) {
     this.objectMapper = objectMapper;
     this.executionRepository = executionRepository;
     this.executionRunner = executionRunner;
     this.clock = clock;
     this.applicationEventPublisher = applicationEventPublisher;
-    this.pipelineValidator = pipelineValidator;
+    this.pipelineValidators = pipelineValidators.orElse(new ArrayList<>());
     this.registry = registry;
   }
 
@@ -88,8 +89,11 @@ public class ExecutionLauncher {
     if (existingExecution != null) {
       return existingExecution;
     }
-
-    checkRunnable(execution);
+    try {
+      checkRunnable(execution);
+    } catch (Throwable t) {
+      handleStartupFailure(execution, t);
+    }
 
     persistExecution(execution);
 
@@ -121,7 +125,9 @@ public class ExecutionLauncher {
 
   private void checkRunnable(PipelineExecution execution) {
     if (execution.getType() == PIPELINE) {
-      pipelineValidator.ifPresent(it -> it.checkRunnable(execution));
+      for (PipelineValidator pv : pipelineValidators) {
+        pv.checkRunnable(execution);
+      }
     }
   }
 

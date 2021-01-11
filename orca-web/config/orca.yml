@@ -35,6 +35,13 @@ kayenta:
 redis:
   connection: ${services.redis.baseUrl:redis://localhost:6379}
 
+policy:
+  opa:
+    enabled: false
+    url: http://localhost:8181
+    policyLocation: opa/pipelines/datetimeslot
+    resultKey: deny
+
 keiko:
   queue:
     fillExecutorEachCycle: true
