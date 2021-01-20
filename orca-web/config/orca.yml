@@ -41,7 +41,7 @@ policy:
     url: http://localhost:8181
     policyLocation: opa/pipelines/datetimeslot
     resultKey: deny
-
+    
 keiko:
   queue:
     fillExecutorEachCycle: true
