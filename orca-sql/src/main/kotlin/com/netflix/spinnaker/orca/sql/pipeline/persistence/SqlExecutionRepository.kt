@@ -146,6 +146,14 @@ class SqlExecutionRepository(
     storeStage(stage)
   }
 
+  override fun updateStageOthers(stage: StageExecution) {
+    storeStage(stage)
+  }
+
+  override fun deleteStageOthers(stage: StageExecution) {
+    // Need to implement for sql.
+  }
+
   override fun removeStage(execution: PipelineExecution, stageId: String) {
     validateHandledPartitionOrThrow(execution)
 
